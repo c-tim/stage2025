@@ -42,20 +42,30 @@ class CSVfile():
     ## print the labels of the columns
     def print_categories(self):
         print(self.categories)
+    
+    def extract_data(self, name_cols, condFilter : dict()):
+        for col_name in condFilter:
+            pass #TODO complete
+            
 
     # TODO test
-    def get_columns(self, name_cols):
+    def get_columns(self, name_cols, filter_col = None):
         result = []
         for name_col in name_cols:
-            result.append(self.get_column(name_col))
+            result.append(self.get_column(name_col, filter_col))
         return result
 
     # 
-    def get_column(self, name_col : str):
+    def get_column(self, name_col : str, filter_col = None):
         col = []
+        
+        # filter col contains the ids of the line filtered by extract_data
+        if filter_col is None :
+            filter_col = range(len(self.content))
+        
         for i in range(self.n_column):
             if self.categories[i] == name_col:
-                for n_line in range(len(self.content)):
+                for n_line in filter_col:
                     col.append(self.content[n_line][i])
         return col
 

@@ -11,7 +11,7 @@ from pyTorchModel import pyTorchModel as pModel
 ## This class will be used as an object contained by pytorchModel
 class pytorchExistingModel(pModel):
     
-    def __init__(self, given_criterion):
+    def __init__(self):
         pass
     #TODO
         
