@@ -8,21 +8,130 @@ Created on Tue Jul 29 16:16:45 2025
 
 from codecarbon import track_emissions
 from CSVReader import CSVfile
+import matplotlib.pyplot as plt
+import DataTools
 
 class EnergyAnalyzer():
     
-    def __init__(self, name_project : str):
+    def __init__(self, name_project : str, name_output_file :str = "emissions.csv"):
         self.current_project_name = ""
         self.set_new_project(name_project)
+        self.csvResult = None
+        self.name_file = name_output_file
     
     def set_new_project(self, name_project : str):
         self.current_project_name = name_project
+    
+    @track_emissions(project_name="temp_dont_use", output_file="temp.csv")
+    def blank_function(self):
+        """
+        Used to prevent a bug on the last tracked function
+        """
+        i=0
+        i+=1
 
     def track_function(self,f, additional_infos = ""):
         label =self.current_project_name+ ":" + f.__name__
         if additional_infos != "":
-            label += "("+additional_infos+")"
-        @track_emissions(project_name=label)
+            label += ":"+additional_infos
+        @track_emissions(project_name=label, output_file=self.name_file)
         def wrapped(*args, **kwargs):
             return f(*args, **kwargs)
         return wrapped  
+    
+    def recup_file_result(self, path_file = ""):
+        if path_file == "":
+            self.csvResult = CSVfile(self.name_file)
+        else :
+            self.csvResult = CSVfile(path_file)
+    
+    def convertData(sekf, col):
+        l=[]
+        for element in col:
+            l.append(DataTools.scientificNotation_to_doouble(element))
+        return l
+    
+    def display_data_axis(self, col_names, name_file="" ,x_axis = "", x_col = [],condFilter = None):
+        """
+        Warning : do not put ',' in the project_name, it is processed as another case for the CSV reader
+
+        Parameters
+        ----------
+        col_names : TYPE
+            DESCRIPTION.
+        name_file : TYPE, optional
+            DESCRIPTION. The default is "".
+        x_axis : TYPE, optional
+            DESCRIPTION. The default is "".
+        condFilter : TYPE, optional
+            DESCRIPTION. The default is None.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
+        self.blank_function()
+        self.recup_file_result(name_file)
+        #one col is given
+        if type(col_names)==str:
+            col_names = [col_names]
+        
+        
+        cols_result = self.csvResult.extract_data(col_names, condFilter)
+
+        # if the resukt if the x axis are given, take them
+        if len(x_col) > 0 :
+            col_label_result = x_col
+            if x_axis == "":
+                print("WARNING : there is no name for x_axis although data for the x column has been given.")
+                x_axis = "Datas"
+        #else if a name for x col has been set but not data, it must be a col from the csv file
+        elif x_axis != "":
+            col_label_result = self.csvResult.extract_data(x_axis, condFilter)
+        
+        #else the x axis will be ids of tests
+        else :
+            # we get the last part of the label "project:current_test"-> "current_test"
+            col_label_result = self.csvResult.extract_data("project_name", condFilter)[0]
+            for i in range(len(col_label_result)):
+                #we add i at the end in cases several tests are done with the same name
+                col_label_result[i]=col_label_result[i].split(":")[-1]+str(i+1)             
+            x_axis = "label test"
+        l=[]
+        for col_res in cols_result:
+            l.append(self.convertData(col_res))
+        cols_result = l
+        print(cols_result, " stored with the label(s) ", col_label_result)
+        return self.display_graph_col_on_2_axis(x_axis, col_names, col_label_result, cols_result)
+        '''  col2 = self.csvResult.extract_data([col_names], condFilter)
+            col2 = self.convertData(col2[0])
+            return self.display_graph_col_on_2_axis("test", col_names, range(1,len(col2)+1), col2)
+        elif len(col_names) == 2:
+            col1, col2 = self.csvResult.extract_data(col_names, condFilter)
+            col2 = self.convertData(col2)
+            return self.display_graph_col_on_2_axis(col_names[0], col_names[1], col1, col2)'''
+        #print("Error col_names must be a str or a list of str")
+        
+    def display_graph_col_on_2_axis(self, label_x, label_y,col_data_x, cols_data_y):
+        all_label = ""
+        args = []
+        for i in range(len(cols_data_y)):
+            if i > 0:
+                all_label+=", "
+            all_label += label_y[i]
+            args.append(col_data_x)
+            args.append(cols_data_y[i])
+        
+        plt.plot(*args)
+        plt.xlabel(label_x)
+        plt.ylabel(all_label)
+        plt.suptitle(self.current_project_name)
+        plt.legend()
+        plt.show()
+
+#eAnalyzer = EnergyAnalyzer("test validation")
+#eAnalyzer.display_data_axis(["energy_consumed", "ram_energy"])
+
+            

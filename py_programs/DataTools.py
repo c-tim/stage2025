@@ -35,7 +35,27 @@ def get_transform(dimension : int):
     print(vec)
     return transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize(vec, vec)])
+
+def scientificNotation_to_double(t):
+    part = t.split('e')
+    print(part)
+    if (len(part)>1):
+        return float(part[0])*10 ** (int(part[1]))
+    return float(part[0])
+
+def str_to_singleton(obj):
+    """
     
+
+    Parameters
+    ----------
+    obj : str or list
+
+    Returns list
+    """
+    if type(obj)==str:
+        obj = [obj]
+    return obj
 usual_transform = get_transform(3)
 
 usual_classes = ('plane', 'car', 'bird', 'cat',

@@ -15,26 +15,28 @@ import torch.optim as optim
 import torch
 import torchvision
 from classPytorchNet import pyTorchNet
+from classCustomCNET import pyTorchCNet
 
 from codecarbon import track_emissions
  
+import DataTools
+
 
 class pyTorchModel(mod):
     
     
-    def __init__(self, given_criterion, given_Model = None, n_layers_outpout=3):
-        super().__init__()
-        print("end super")
-        
+    def __init__(self, given_criterion, given_Model = None, n_layers_outpout=3, param_net_model = None):
+        super().__init__()        
         #initialisation of pyModel
         self.pyModel = None
         
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         if given_Model is None :
             self.pyModel = pyTorchNet(n_layers_outpout)
-
+        elif param_net_model is not None :
+            self.pyModel = pyTorchCNet(**param_net_model)   
         else :
-            self.pyModel = given_Model()
+            self.pyModel = given_Model
         self.pyModel.to(self.device)
         # optimizer here because it use net properties
         self.optimizer = optim.SGD(self.pyModel.parameters(), lr=0.001, momentum=0.9)
@@ -137,5 +139,8 @@ class pyTorchModel(mod):
         self.savePathModel = path
         torch.save(self.pyModel.state_dict(), path)
         print("Model saved in ", path)
-
     
+    '''def print_characteristics_model(self):
+        self.given_Model.print_'''
+
+

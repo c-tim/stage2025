@@ -22,11 +22,11 @@ import torch.optim as optim
 from codecarbon import track_emissions
 
 
+import DataTools
+from pyTorchModel import pyTorchModel
 
-from pyTorchModel import pyTorchModel as torchM
 
-
-print("oui")
+'''print("oui")
 
 transform = transforms.Compose(
     [transforms.ToTensor(),
@@ -49,10 +49,15 @@ classes = ('plane', 'car', 'bird', 'cat',
            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
 criterion = nn.CrossEntropyLoss()
-
-testModel = torchM(criterion)
+'''
+#testModel = torchM(criterion)
 
 #the commented methods below work
 #testModel.train(trainloader, "./testsave.pth")
 #testModel.print_performances_categories("./testsave.pth", testloader, classes)
-testModel.print_performances_global("./testsave.pth", testloader, classes)
+'''
+param_model = {"conv1_out":6}
+
+#testModel.print_performances_global("./testsave.pth", testloader, classes)
+testCustomNet = pyTorchModel(DataTools.usual_criterion,param_net_model=param_model)
+testCustomNet.train(DataTools.CIFAR10.trainloader, "./testsave.pth")'''

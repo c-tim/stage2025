@@ -20,7 +20,6 @@ class pyTorchNet(nn.Module):
 
     def __init__(self, n_layer_conv2d):
         super().__init__()
-        print("end super")
         self.conv1 = nn.Conv2d(n_layer_conv2d, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(6, 16, 5)
@@ -29,10 +28,7 @@ class pyTorchNet(nn.Module):
         self.fc3 = nn.Linear(84, 10)
         #self.useCuda = onCUDA
         
-
-
-    
-    
+        
     #TODO maybe add a way to personnalize the layer and the forward propagation function
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
