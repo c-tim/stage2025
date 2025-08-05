@@ -26,7 +26,9 @@ import torchvision
 ## This class will be used as an object contained by pytorchModel
 ## Parts of the initialisation have been generated 
 class pyTorchCNet(nn.Module):
-
+    """
+    A customizable model of Pytorch used by the class pyTorchModel.
+    """
     def __init__(self,
              in_channels=3,        
              conv1_out=6,

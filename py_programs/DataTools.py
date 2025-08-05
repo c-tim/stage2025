@@ -37,6 +37,9 @@ def get_transform(dimension : int):
         [transforms.ToTensor(), transforms.Normalize(vec, vec)])
 
 def scientificNotation_to_double(t):
+    """
+    Exemple : "1e-10" --> 0.1
+    """
     part = t.split('e')
     print(part)
     if (len(part)>1):
@@ -45,17 +48,14 @@ def scientificNotation_to_double(t):
 
 def str_to_singleton(obj):
     """
-    
-
-    Parameters
-    ----------
-    obj : str or list
-
-    Returns list
+    If obj is a string, returns it as a singleton of a List.
+    Returns obj otherwise.
     """
     if type(obj)==str:
         obj = [obj]
     return obj
+
+#Usual components for the traininf and test of models
 usual_transform = get_transform(3)
 
 usual_classes = ('plane', 'car', 'bird', 'cat',
@@ -66,7 +66,8 @@ usual_criterion = nn.CrossEntropyLoss()
 testData =  transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
 
-#Datasets
+#Datasets declaration
 CIFAR10 = Dataset(torchvision.datasets.CIFAR10)
 MNIST = Dataset(torchvision.datasets.MNIST, transform=testData)
+
 #Flowers = Dataset(torchvision.datasets.Flowers102) not working

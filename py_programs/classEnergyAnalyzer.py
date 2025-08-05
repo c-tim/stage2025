@@ -12,14 +12,29 @@ import matplotlib.pyplot as plt
 import DataTools
 
 class EnergyAnalyzer():
-    
+    """
+    An object that track the emissions of chosen functions (using codecarbon)
+    and deals with its data stored in a csv file.
+
+    Parameters
+    ----------
+    name_project : str
+        The name displayed in the column "project_name". Used to retrieve datas in the file.
+    name_output_file : str, optional
+        The csv file sotring the emissions datas. The default is "emissions.csv".
+    -------
+    """
     def __init__(self, name_project : str, name_output_file :str = "emissions.csv"):
+
         self.current_project_name = ""
         self.set_new_project(name_project)
         self.csvResult = None
         self.name_file = name_output_file
     
     def set_new_project(self, name_project : str):
+        """
+        Change the name of the project (value of the column 'project_name').
+        """
         self.current_project_name = name_project
     
     @track_emissions(project_name="temp_dont_use", output_file="temp.csv")
@@ -68,7 +83,7 @@ class EnergyAnalyzer():
         else :
             self.csvResult = CSVfile(path_file)
     
-    def convertData(sekf, col):
+    def convertData(self, col):
         l=[]
         for element in col:
             l.append(DataTools.scientificNotation_to_double(element))

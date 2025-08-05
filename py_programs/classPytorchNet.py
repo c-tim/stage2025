@@ -17,8 +17,11 @@ import torchvision
 
 ## This class will be used as an object contained by pytorchModel
 class pyTorchNet(nn.Module):
-
+        """
+        A model of Pytorch used by the class pyTorchModel.
+        """
     def __init__(self, n_layer_conv2d):
+
         super().__init__()
         self.conv1 = nn.Conv2d(n_layer_conv2d, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
