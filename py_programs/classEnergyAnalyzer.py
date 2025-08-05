@@ -31,6 +31,29 @@ class EnergyAnalyzer():
         i+=1
 
     def track_function(self,f, additional_infos = ""):
+        """
+        track the emissions of a function using codecarbon module
+        
+        Usage :
+            def f(a):
+                return a*2
+            track_function(f)
+            print(tracked_function(5))
+            --> return 10
+
+        Parameters
+        ----------
+        f : function to track no argument
+            DESCRIPTION.
+        additional_infos : TYPE, optional
+            DESCRIPTION. The default is "".
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
         label =self.current_project_name+ ":" + f.__name__
         if additional_infos != "":
             label += ":"+additional_infos
@@ -48,7 +71,7 @@ class EnergyAnalyzer():
     def convertData(sekf, col):
         l=[]
         for element in col:
-            l.append(DataTools.scientificNotation_to_doouble(element))
+            l.append(DataTools.scientificNotation_to_double(element))
         return l
     
     def display_data_axis(self, col_names, name_file="" ,x_axis = "", x_col = [],condFilter = None):
@@ -130,8 +153,13 @@ class EnergyAnalyzer():
         plt.suptitle(self.current_project_name)
         plt.legend()
         plt.show()
+        
+label_training = ["v2","v3_large","v3_small"]
 
-#eAnalyzer = EnergyAnalyzer("test validation")
+
+eAnalyzer = EnergyAnalyzer("performance mobilenet")
+eAnalyzer.display_graph_col_on_2_axis("model_name", "results", label_training, [[1973, 4122, 3803]])
+
 #eAnalyzer.display_data_axis(["energy_consumed", "ram_energy"])
 
             

@@ -114,6 +114,16 @@ class pyTorchModel(mod):
                     correct_pred[classes[label_sample]] += 1
                 total_pred[classes[label_sample]] += 1
         return correct_pred, total_pred
+    
+    def get_global_performance(self, correct_predictions,total_predictions ):
+        total = 0
+        correct = 0
+
+        for classname, correct_count in correct_predictions.items():
+            correct += correct_predictions[classname]
+            total += total_predictions[classname]
+        return correct, total
+
 
     def print_performances_categories(self, path, dataloader, classes):
         correct_predictions, total_predictions = self.analyse_performance(path, dataloader, classes)
@@ -125,14 +135,13 @@ class pyTorchModel(mod):
             print(f'Accuracy for class: {classname:5s} is {accuracy:.1f} %')
     
     def print_performances_global(self, path, dataloader, classes):
-        total = 0
-        correct = 0
 
         correct_predictions, total_predictions = self.analyse_performance(path, dataloader, classes)
-        for classname, correct_count in correct_predictions.items():
+        correct, total = self.get_global_performance(correct_predictions, total_predictions)
+        '''for classname, correct_count in correct_predictions.items():
             correct += correct_predictions[classname]
             total += total_predictions[classname]
-
+        '''
         print(f'Accuracy of the network on the 10000 test images: {100 * correct // total} %')
 
     def save_model(self, path):

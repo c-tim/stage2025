@@ -45,6 +45,9 @@ class CSVfile():
             
     ## print the labels of the columns
     def print_categories(self):
+        '''
+        Print the label of each categorie.
+        '''
         print(self.categories)
     
     def extract_data(self, name_cols, condFilter : dict() = None):
