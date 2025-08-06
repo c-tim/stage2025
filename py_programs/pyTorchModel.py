@@ -41,19 +41,31 @@ class pyTorchModel(mod):
         # optimizer here because it use net properties
         self.optimizer = optim.SGD(self.pyModel.parameters(), lr=0.001, momentum=0.9)
         self.criterion = given_criterion
-    
-    #TODO delete after
-    def train2(training_data, path_save_model,number_epoch = 2):
-            print(training_data, path_save_model,number_epoch, " bbb")
-    
-    #@track_emissions(project_name="Test1_track_method_within_method")
-    def train(self, training_data, path_save_model,number_epoch = 2):
+     
+    def train(self, training_data, path_save_model,number_epoch = 2, verbose = True):
+        """
+        Train the pyTorch model
+
+        Parameters
+        ----------
+        training_data : dataset
+        path_save_model : str
+            DESCRIPTION.
+        number_epoch : TYPE, optional
+            DESCRIPTION. The default is 2.
+        verbose : TYPE, optional
+            DESCRIPTION. The default is True.
+
+        Returns
+        -------
+        None.
+
+        """
         for epoch in range(number_epoch):  # loop over the dataset multiple times
         
             running_loss = 0.0
             for i, data in enumerate(training_data, 0):
                 # get the inputs; data is a list of [inputs, labels]
-                #inputs, labels = data
                 inputs, labels = data[0].to(self.device), data[1].to(self.device)
                 # zero the parameter gradients
                 self.optimizer.zero_grad()
@@ -66,7 +78,7 @@ class pyTorchModel(mod):
         
                 # print statistics
                 running_loss += loss.item()
-                if i % 2000 == 1999:    # print every 2000 mini-batches
+                if i % 2000 == 1999 and verbose:    # print every 2000 mini-batches
                     print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
                     running_loss = 0.0
         
@@ -93,6 +105,7 @@ class pyTorchModel(mod):
 
                 labels_group.append(label)
             return labels_group, outputs_group
+        
     def get_predictions(self, outputs):
         predictions = []
         for output in outputs:
@@ -101,6 +114,10 @@ class pyTorchModel(mod):
         return predictions
     
     def analyse_performance(self, path, dataloader, classes):
+        """
+        Returns the rate of the correc predictions based on the dataloader and the classes provided
+
+        """
         correct_pred = {classname: 0 for classname in classes}
         total_pred = {classname: 0 for classname in classes}
 
@@ -138,10 +155,6 @@ class pyTorchModel(mod):
 
         correct_predictions, total_predictions = self.analyse_performance(path, dataloader, classes)
         correct, total = self.get_global_performance(correct_predictions, total_predictions)
-        '''for classname, correct_count in correct_predictions.items():
-            correct += correct_predictions[classname]
-            total += total_predictions[classname]
-        '''
         print(f'Accuracy of the network on the 10000 test images: {100 * correct // total} %')
 
     def save_model(self, path):
@@ -149,7 +162,5 @@ class pyTorchModel(mod):
         torch.save(self.pyModel.state_dict(), path)
         print("Model saved in ", path)
     
-    '''def print_characteristics_model(self):
-        self.given_Model.print_'''
 
 

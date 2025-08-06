@@ -29,7 +29,7 @@ class Dataset():
         [transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-    
+
     def __init__(self, given_dataset, transform = USUAL_TRANSFORM, batch_size=4):
         """
         Create a Dataset for the model, including set and loader for training and test.
@@ -55,3 +55,5 @@ class Dataset():
                                                download=True, transform=transform)
         self.testloader = torch.utils.data.DataLoader(self.testset, batch_size=batch_size,
                                                  shuffle=False, num_workers=2)
+        self.test_sample = next(iter(self.trainloader))
+        

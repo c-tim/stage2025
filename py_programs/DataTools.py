@@ -41,7 +41,6 @@ def scientificNotation_to_double(t):
     Exemple : "1e-10" --> 0.1
     """
     part = t.split('e')
-    print(part)
     if (len(part)>1):
         return float(part[0])*10 ** (int(part[1]))
     return float(part[0])
