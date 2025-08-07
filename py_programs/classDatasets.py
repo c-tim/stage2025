@@ -22,7 +22,7 @@ import numpy as np
 
 
 
-class Dataset():
+class pytorchDataset():
     
     
     USUAL_TRANSFORM = transforms.Compose(

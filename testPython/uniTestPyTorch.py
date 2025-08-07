@@ -12,6 +12,8 @@ import unittest
 import DataTools
 from pyTorchModel import pyTorchModel
 from classEnergyAnalyzer import EnergyAnalyzer
+from classTensorFunction import TensorNet
+from classTensorModule import *
 
 class testPyTorchModel(unittest.TestCase):
     
@@ -60,10 +62,47 @@ class testEnergyAnalyzer(unittest.TestCase):
         
     #TODO add test to check suffixe for file name inputs
     
+class testTensorFlow(unittest.TestCase):
+    
+    def test_noErrorModel(self):
+        
+        test_model = TensorNet([6,32,32,2])
+    
+    def test_noErrorMultilayer(self):
+        l = []
+        for i in range(10):
+            l.append(5)
+            test_model = TensorNet(l)
+    
+    def create_sample_tfModules(self):
+        return [tfInputData(shape=[None, 8]), tfFullyConnected(4), tfFullyConnected(40), tfDropout(0.4), tfFullyConnected(50)]
+    
+    def test_noErrorModule(self):
+        test_net = TensorNet(layers=self.create_sample_tfModules())
+        test_net.print_modules()
+    
+    
+
+
+class testTensorModules(unittest.TestCase):
+    
+    def test_noErrorInputData(self):
+        #tfInputData(45)
+        tfInputData(shape=[None, 78])
+    
+    def test_noErrorFullyConnected(self):
+        tfFullyConnected(7)
+        tfFullyConnected(30)
+    
+    def test_noErrorDropout(self):
+        tfDropout(0.5)
+    
+    
+    
 
 
 
                 
                 
         
-unittest.main()
+unittest.main(verbosity=20)

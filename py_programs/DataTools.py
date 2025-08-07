@@ -19,7 +19,7 @@ import torchvision.models as models
 import matplotlib.pyplot as plt
 import numpy as np
 
-from classDatasets import Dataset
+from classDatasets import pytorchDataset
 
 def imshow(img):
     """
@@ -66,7 +66,7 @@ testData =  transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
 
 #Datasets declaration
-CIFAR10 = Dataset(torchvision.datasets.CIFAR10)
-MNIST = Dataset(torchvision.datasets.MNIST, transform=testData)
+CIFAR10 = pytorchDataset(torchvision.datasets.CIFAR10)
+MNIST = pytorchDataset(torchvision.datasets.MNIST, transform=testData)
 
 #Flowers = Dataset(torchvision.datasets.Flowers102) not working
