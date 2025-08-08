@@ -19,7 +19,7 @@ import torchvision.models as models
 import matplotlib.pyplot as plt
 import numpy as np
 
-from classDatasets import pytorchDataset
+from classpyDatasets import pytorchDataset
 
 def imshow(img):
     """

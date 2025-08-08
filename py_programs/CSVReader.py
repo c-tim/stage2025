@@ -13,9 +13,21 @@ import DataTools
 class CSVfile():
     
     PATH_SAVE_DATAS = "../emissions_datas"
+    
+    def create_file(path):
+        try:
+            open(path, 'x')
+        except :
+            print("Error file already created")
+        return CSVfile(path)
 
     def __init__(self, path = './emissions.csv'):
-        self.file =  open(path, newline='')
+       
+        self.path = path
+        self.refresh_read_file()
+    
+    def refresh_read_file(self):
+        self.file =  open(self.path, newline='')
         self.line_red = csv.reader(self.file, delimiter=',', quotechar='/')
         # we get the content beacause the iterator is not readable several times
         self.categories = ["id_col"] + self.line_red.__next__() 
@@ -26,7 +38,9 @@ class CSVfile():
             #print("line ", i, " : ", line)
             self.content.append([str(i)] + line.split(","))
             i+=1
-        self.path = path
+        self.file.close()
+
+    
             
     ## print the labels of the columns
     def print_categories(self):
@@ -111,6 +125,11 @@ class CSVfile():
                 T +=", "+col[i]'''
             for n_col in range(1,len(result)):
                 T += ", "+result[n_col][i]
+                
+    def write_data(self, column_name):
+        pass
+        writer = csv.writer(self.path)
+        writer.writerows()
 
     def save_file_and_clean(self, name_saved_file, path_saev_file = PATH_SAVE_DATAS):
         #TODO may not work on Windows

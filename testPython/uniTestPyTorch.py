@@ -10,10 +10,17 @@ sys.path.append('../py_programs/')
 
 import unittest
 import DataTools
+import DataValidation
 from pyTorchModel import pyTorchModel
 from classEnergyAnalyzer import EnergyAnalyzer
 from classTensorFunction import TensorNet
 from classTensorModule import *
+
+import numpy as np
+
+from tflearn.datasets import titanic
+from tflearn.data_utils import load_csv
+
 
 class testPyTorchModel(unittest.TestCase):
     
@@ -81,8 +88,28 @@ class testTensorFlow(unittest.TestCase):
         test_net = TensorNet(layers=self.create_sample_tfModules())
         test_net.print_modules()
     
-    
+    def test_tensorTraining(self):
+        test_net = TensorNet(layers=[tfInputData(shape=[None, 6]), tfFullyConnected(32), tfFullyConnected(32), tfFullyConnected(2)])
 
+        titanic.download_dataset('titanic_dataset.csv')
+        data, labels = load_csv('titanic_dataset.csv', target_column=0,
+                       categorical_labels=True, n_classes=2)
+        
+        
+        def preprocess(passengers, columns_to_delete):
+            # Sort by descending id and delete columns
+            for column_to_delete in sorted(columns_to_delete, reverse=True):
+                [passenger.pop(column_to_delete) for passenger in passengers]
+            for i in range(len(passengers)):
+                # Converting 'sex' field to float (id is 1 after removing labels column)
+                passengers[i][1] = 1. if data[i][1] == 'female' else 0.
+            return np.array(passengers, dtype=np.float32)
+        
+        data = preprocess(data, [1,2,3,4,5,6])
+
+        test_net.train(data, labels)
+    
+    
 
 class testTensorModules(unittest.TestCase):
     
@@ -97,12 +124,32 @@ class testTensorModules(unittest.TestCase):
     def test_noErrorDropout(self):
         tfDropout(0.5)
     
+    def test_WrongRangeDropout(self):
+        t=tfDropout(4)
+        self.assertEqual(t.isValid(), False)
     
     
+class test_DataValidation(unittest.TestCase):
+    
+    def test_isCorrectType(self):
+        f = DataValidation.isCorrectType
+        self.assertTrue(f(5, int))
+        self.assertTrue(f("ds", str))
+        self.assertTrue(f(5.1, float))
+        self.assertFalse(f(5.1, int))
+        self.assertFalse(f("eee", int))
+        self.assertFalse(f("eee", float))
+        self.assertFalse(f(1, bool))
+
+    
+    def test_addSuffixIfNecessary(self):
+        f = DataValidation.addSuffixIfNecessary
+        self.assertEqual(f("test.txt", "txt"), "test.txt")
+        self.assertEqual(f("test.txt", ".txt"), "test.txt")
+        self.assertEqual(f("test", ".txt"), "test.txt")
+        self.assertEqual(f("test", "txt"), "test.txt")
 
 
-
-                
-                
+        
         
 unittest.main(verbosity=20)

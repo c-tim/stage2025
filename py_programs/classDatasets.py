@@ -22,7 +22,7 @@ import numpy as np
 
 
 
-class pytorchDataset():
+class Dataset():
     
     
     USUAL_TRANSFORM = transforms.Compose(
@@ -30,7 +30,7 @@ class pytorchDataset():
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 
-    def __init__(self, given_dataset, transform = USUAL_TRANSFORM, batch_size=4):
+    def __init__(self):
         """
         Create a Dataset for the model, including set and loader for training and test.
 
@@ -45,15 +45,6 @@ class pytorchDataset():
         None.
 
         """
-        self.dataset = given_dataset
-        self.trainset = given_dataset(root='../data', train=True,
-                                                download=True, transform=transform)
-        self.trainloader = torch.utils.data.DataLoader(self.trainset, batch_size=batch_size,
-                                                  shuffle=True, num_workers=2)
-
-        self.testset = given_dataset(root='../data', train=False,
-                                               download=True, transform=transform)
-        self.testloader = torch.utils.data.DataLoader(self.testset, batch_size=batch_size,
-                                                 shuffle=False, num_workers=2)
-        self.test_sample = next(iter(self.trainloader))
+        self.train_inputs = None
+        self.test_inputs = None
         

@@ -10,6 +10,7 @@ from codecarbon import track_emissions
 from CSVReader import CSVfile
 import matplotlib.pyplot as plt
 import DataTools
+import DataValidation
 
 class EnergyAnalyzer():
     """
@@ -26,6 +27,7 @@ class EnergyAnalyzer():
     """
     def __init__(self, name_project : str, name_output_file :str = "emissions.csv"):
 
+        DataValidation.addSuffixIfNecessary(name_output_file, ".csv")
         self.current_project_name = ""
         self.set_new_project(name_project)
         self.csvResult = None
@@ -81,6 +83,7 @@ class EnergyAnalyzer():
         if path_file == "":
             self.csvResult = CSVfile(self.name_file)
         else :
+            DataValidation.addSuffixIfNecessary(path_file, ".csv")
             self.csvResult = CSVfile(path_file)
     
     def convertData(self, col):
@@ -142,16 +145,8 @@ class EnergyAnalyzer():
             l.append(self.convertData(col_res))
         cols_result = l
         print(cols_result, " stored with the label(s) ", col_label_result)
-        return self.display_graph_col_on_2_axis(x_axis, col_names, col_label_result, cols_result)
-        '''  col2 = self.csvResult.extract_data([col_names], condFilter)
-            col2 = self.convertData(col2[0])
-            return self.display_graph_col_on_2_axis("test", col_names, range(1,len(col2)+1), col2)
-        elif len(col_names) == 2:
-            col1, col2 = self.csvResult.extract_data(col_names, condFilter)
-            col2 = self.convertData(col2)
-            return self.display_graph_col_on_2_axis(col_names[0], col_names[1], col1, col2)'''
-        #print("Error col_names must be a str or a list of str")
-        
+        return self.display_graph_col_on_2_axis(x_axis, col_names, col_label_result, cols_result)    
+    
     def display_graph_col_on_2_axis(self, label_x, label_y,col_data_x, cols_data_y):
         all_label = ""
         args = []
@@ -169,12 +164,5 @@ class EnergyAnalyzer():
         plt.legend()
         plt.show()
         
-label_training = ["v2","v3_large","v3_small"]
-
-
-eAnalyzer = EnergyAnalyzer("performance mobilenet")
-eAnalyzer.display_graph_col_on_2_axis("model_name", "results", label_training, [[1973, 4122, 3803]])
-
-#eAnalyzer.display_data_axis(["energy_consumed", "ram_energy"])
 
             

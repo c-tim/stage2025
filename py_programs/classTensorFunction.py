@@ -71,15 +71,22 @@ class TensorNet():
         self.net = None
         for module in self.list_module:
             self.net = module.addLayer(self.net)
+        self.net = tflearn.regression(self.net)
+
         
         # Define model
         self.model = tflearn.DNN(self.net)
+        
+        self.is_tensor_built = True
             
             
         
     
-    def train(self, dataset : tfDatasets, n_epoch = 10, batch_size = 16):
-        data, labels = dataset.inputs
+    def train(self, data, labels, n_epoch = 10, batch_size = 16):
+        if not self.is_tensor_built:
+            print("Warning : tensor was not built. Building the net")
+            self.build_model()
+        #data, labels = dataset
         # Start training (apply gradient descent algorithm)
         self.model.fit(data, labels, n_epoch=10, batch_size=16, show_metric=True)
 
