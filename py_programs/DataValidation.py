@@ -34,7 +34,7 @@ def addSuffixIfNecessary(path : str, suffixe : str)->str:
     return path
 
 #TODO may be usefull later to verify the arguments of a function before launching it
-def launch_delayed():
+def launch_delayed(f):
     def wrapped(*args, **kwargs):
         return f(*args, **kwargs)
     return wrapped

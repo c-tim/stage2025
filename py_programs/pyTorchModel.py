@@ -20,7 +20,7 @@ from classCustomCNET import pyTorchCNet
 from codecarbon import track_emissions
  
 import DataTools
-
+import DataValidation
 
 class pyTorchModel(mod):
     
@@ -61,6 +61,8 @@ class pyTorchModel(mod):
         None.
 
         """
+        DataValidation.addSuffixIfNecessary(path_save_model, ".pth")
+        
         for epoch in range(number_epoch):  # loop over the dataset multiple times
         
             running_loss = 0.0

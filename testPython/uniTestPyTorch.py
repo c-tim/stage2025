@@ -15,6 +15,7 @@ from pyTorchModel import pyTorchModel
 from classEnergyAnalyzer import EnergyAnalyzer
 from classTensorFunction import TensorNet
 from classTensorModule import *
+import classModelTester as Tester
 
 import numpy as np
 
@@ -149,6 +150,16 @@ class test_DataValidation(unittest.TestCase):
         self.assertEqual(f("test", ".txt"), "test.txt")
         self.assertEqual(f("test", "txt"), "test.txt")
 
+class test_ModelTester(unittest.TestCase):
+    
+    def getAnalyze(self):
+        return EnergyAnalyzer("temp", name_output_file="temp.csv")
+    
+    def test_testGpu(self):
+        Tester.testGpu(self.getAnalyze(), 2)
+        
+    def test_pyTorch_series_train_and_track_emissions(self):
+        Tester.pyTorch_series_train_and_track_emissions(self.getAnalyze(), [0], DataTools.CIFAR10.test_sample, "uniTest",1)
 
         
         

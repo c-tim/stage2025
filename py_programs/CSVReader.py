@@ -27,7 +27,7 @@ class CSVfile():
         self.refresh_read_file()
     
     def refresh_read_file(self):
-        self.file =  open(self.path, newline='')
+        self.file =  open(self.path, 'a',newline='')
         self.line_red = csv.reader(self.file, delimiter=',', quotechar='/')
         # we get the content beacause the iterator is not readable several times
         self.categories = ["id_col"] + self.line_red.__next__() 
@@ -125,11 +125,22 @@ class CSVfile():
                 T +=", "+col[i]'''
             for n_col in range(1,len(result)):
                 T += ", "+result[n_col][i]
+    
+    def add_column(self, name_categorie : str, values_categories = None):
+        self.categories.append(name_categorie)
+        if values_categories is None :
+            for i in range(len(self.content)):
+                self.content[i].append('Null')
+        else :
+            for i in range(len(self.content)):
+                self.content[i].append(values_categories[i])
+        
                 
-    def write_data(self, column_name):
-        pass
-        writer = csv.writer(self.path)
-        writer.writerows()
+    def write_data(self, path_saved_file):
+        
+        writer = csv.writer(path_saved_file)
+        writer.writerow(self.categories)
+        writer.writerows(self.content)
 
     def save_file_and_clean(self, name_saved_file, path_saev_file = PATH_SAVE_DATAS):
         #TODO may not work on Windows

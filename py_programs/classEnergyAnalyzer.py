@@ -113,7 +113,7 @@ class EnergyAnalyzer():
             DESCRIPTION.
 
         """
-        self.blank_function()
+        #self.blank_function()
         self.recup_file_result(name_file)
         #one col is given
         if type(col_names)==str:
@@ -122,7 +122,7 @@ class EnergyAnalyzer():
         
         cols_result = self.csvResult.extract_data(col_names, condFilter)
 
-        # if the resukt if the x axis are given, take them
+        # if the resukt and the x axis are given, take them
         if len(x_col) > 0 :
             col_label_result = x_col
             if x_axis == "":
