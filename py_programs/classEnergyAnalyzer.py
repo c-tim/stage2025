@@ -81,10 +81,12 @@ class EnergyAnalyzer():
     
     def recup_file_result(self, path_file = ""):
         if path_file == "":
-            self.csvResult = CSVfile(self.name_file)
+            #self.csvResult = CSVfile(self.name_file)
+            self.csvResult = CSVfile.create_file(self.name_file)
         else :
             DataValidation.addSuffixIfNecessary(path_file, ".csv")
-            self.csvResult = CSVfile(path_file)
+            #self.csvResult = CSVfile(path_file)
+            self.csvResult = CSVfile.create_file(path_file)
     
     def convertData(self, col):
         l=[]

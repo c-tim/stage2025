@@ -24,20 +24,26 @@ import DataValidation
 
 class pyTorchModel(mod):
     
+    def createPyTorchNet(given_criterion, n_layers_output):
+        pyModel = pyTorchNet(n_layers_output)
+        return pyTorchModel(given_criterion, pyModel)
     
-    def __init__(self, given_criterion, given_Model = None, n_layers_outpout=3, param_net_model = None):
+    def createPyTorchCNet(given_criterion, param_net_model):
+        pyModel = pyTorchCNet(**param_net_model)   
+        return pyTorchModel(given_criterion, pyModel)
+    
+    def createPyTorchExampleNet(given_criterion, given_Model):
+        return pyTorchModel(given_criterion, given_Model)
+
+
+    def __init__(self, given_criterion, given_Model):
         super().__init__()        
         #initialisation of pyModel
-        self.pyModel = None
+        self.pyModel = given_Model
         
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        if given_Model is None :
-            self.pyModel = pyTorchNet(n_layers_outpout)
-        elif param_net_model is not None :
-            self.pyModel = pyTorchCNet(**param_net_model)   
-        else :
-            self.pyModel = given_Model
-        #self.pyModel.to(self.device)
+
+        self.pyModel.to(self.device)
         # optimizer here because it use net properties
         self.optimizer = optim.SGD(self.pyModel.parameters(), lr=0.001, momentum=0.9)
         self.criterion = given_criterion
@@ -69,7 +75,6 @@ class pyTorchModel(mod):
             for i, data in enumerate(training_data, 0):
                 # get the inputs; data is a list of [inputs, labels]
                 inputs, labels = data[0].to(self.device), data[1].to(self.device)
-                #labels,inputs = data[0].to(self.device), data[1].to(self.device)
                 # zero the parameter gradients
                 self.optimizer.zero_grad()
         

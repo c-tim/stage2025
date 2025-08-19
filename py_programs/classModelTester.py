@@ -11,6 +11,7 @@ from classEnergyAnalyzer import EnergyAnalyzer
 import DataTools
 import torchvision.models as ExampleModels
 from pyTorchModel import pyTorchModel
+from torchsummary import summary
 
 
 def testGpu(analyse : EnergyAnalyzer, power_ten_iterations : int):
@@ -34,7 +35,34 @@ def series_train_and_track_model_emissions(analyser:EnergyAnalyzer, model, datas
     for i in range(len(list_info_tracking)):
         _train_and_track_model_emissions(analyser, model, dataset, path_save_model, list_info_tracking[i])
 
-def pyTorch_series_train_and_track_emissions(analyser:EnergyAnalyzer, list_id_model,dataloader,list_info_tracking, number_epoch):
+
+
+def pyTorch_series_test_model_dataset_compatibility( list_id_model,dataloader, allowErrors):
+    tested_model = {}
+    sucessfully_tested_model={}
+    unsucessfully_tested_model={}
+    list_model = DataTools.models.list_models(module=ExampleModels)
+
+    for id_tested in list_id_model:
+        label_model = list_model[id_tested]
+        print("Test : ", label_model)
+        try :
+            summary(DataTools.models.get_model(label_model),input_size=(3,64,64))
+            sucessfully_tested_model[id_tested]=label_model
+
+        except:
+            print(label_model," is incompatible with this dataset")
+            unsucessfully_tested_model[id_tested] = label_model
+            if not allowErrors :
+                raise Exception("model incompatible")
+                
+    print("failed model : ", unsucessfully_tested_model)
+    print("compatible models : ", sucessfully_tested_model)
+    return sucessfully_tested_model
+
+
+
+def pyTorch_series_train_and_track_emissions(analyser:EnergyAnalyzer, list_id_model,dataloader,list_info_tracking, number_epoch, allowErrors):
     tested_model = {}
     sucessfully_tested_model={}
     unsucessfully_tested_model={}
@@ -42,17 +70,20 @@ def pyTorch_series_train_and_track_emissions(analyser:EnergyAnalyzer, list_id_mo
     for id_tested in list_id_model:
         print(list_model[id_tested], " added")
         label_model = list_model[id_tested]
-        ref_model = ExampleModels.get_model(list_info_tracking+":"+list_model[id_tested])
-        tested_model[list_model[id_tested]] =  ref_model
-        _train_and_track_model_emissions(analyser, )
+        ref_model = ExampleModels.get_model(label_model)
+        tested_model[id_tested] =  label_model
         try :
             model = pyTorchModel(DataTools.usual_criterion, given_Model= ref_model)
-            tracked_function = analyser.track_function(model.train, label_model)
+            tracked_function = analyser.track_function(model.train, list_info_tracking+"("+label_model)
             tracked_function(dataloader, str(label_model)+".pth", number_epoch = number_epoch)         
             sucessfully_tested_model[id_tested] = label_model
         except:
             print(label_model," is incompatible with this configuration")
             unsucessfully_tested_model[id_tested] = label_model
+            if not allowErrors :
+                raise Exception("model incompatible")
+    print("failed model : ", unsucessfully_tested_model)
+    print("sucess models : ", sucessfully_tested_model)
 
 
 #TODO complete the series of tests

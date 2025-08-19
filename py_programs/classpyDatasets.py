@@ -16,6 +16,9 @@ import torchvision.transforms as transforms
 import torchvision.models as models
 
 
+from torch.utils.data import Subset 
+
+
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -23,7 +26,7 @@ import numpy as np
 from classDatasets import Dataset
 
 
-class pytorchDataset(Dataset):
+class pytorchDataset():
     
     
     USUAL_TRANSFORM = transforms.Compose(
@@ -46,7 +49,7 @@ class pytorchDataset(Dataset):
         None.
 
         """
-        super()
+        #super()
         self.dataset = given_dataset
         self.trainset = given_dataset(root='../data', train=True,
                                                 download=True, transform=transform)
@@ -57,8 +60,14 @@ class pytorchDataset(Dataset):
                                                download=True, transform=transform)
         self.testloader = torch.utils.data.DataLoader(self.testset, batch_size=batch_size,
                                                  shuffle=False, num_workers=2)
-        self.test_sample = next(iter(self.trainloader))
-    
+        #    self.test_sample = next(iter(self.trainloader))
+        indices = list(range(100))
+        subset = Subset(self.dataset, indices)
+        self.test_sample =  torch.utils.data.DataLoader(subset, batch_size=batch_size,
+                                                 shuffle=False, num_workers=2)
+        
+
+        
         self.train_inputs = self.trainloader
         self.test_inputs = self.testloader
         

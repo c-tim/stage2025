@@ -9,17 +9,23 @@ Created on Wed Jul 23 14:15:43 2025
 import csv
 import shutil
 import DataTools
+import DataValidation
     
 class CSVfile():
     
     PATH_SAVE_DATAS = "../emissions_datas"
     
     def create_file(path):
+        path = DataValidation.addSuffixIfNecessary(path, ".csv")
         try:
             open(path, 'x')
         except :
             print("Error file already created")
         return CSVfile(path)
+    
+    def open_file(path):
+        return CSVfile(path)
+
 
     def __init__(self, path = './emissions.csv'):
        
@@ -27,10 +33,22 @@ class CSVfile():
         self.refresh_read_file()
     
     def refresh_read_file(self):
-        self.file =  open(self.path, 'a',newline='')
+        self.file =  open(self.path, 'r',newline='')
         self.line_red = csv.reader(self.file, delimiter=',', quotechar='/')
         # we get the content beacause the iterator is not readable several times
-        self.categories = ["id_col"] + self.line_red.__next__() 
+        '''if len(self.line_red)>0:
+            self.categories = ["id_col"] + self.line_red.__next__() 
+        else :
+            self.categories = ["id_col"]'''
+        try :
+            self.categories = self.line_red.__next__() 
+
+        except :
+            self.categories = ["id_col"]    #works for now
+        if self.categories[0] != "id_col":
+            self.categories[0]="id_col"
+
+            
         self.n_column = len(self.categories)
         self.content = [] 
         i = 2 #start at 2 because the first line is for the categories
@@ -43,11 +61,12 @@ class CSVfile():
     
             
     ## print the labels of the columns
-    def print_categories(self):
+    def get_categories(self):
         '''
         Print the label of each categorie.
         '''
         print(self.categories)
+        return self.categories
     
     def extract_data(self, name_cols, condFilter : dict() = None):
         """
@@ -105,26 +124,62 @@ class CSVfile():
         if filter_col is None :
             filter_col = range(len(self.content))
         
-        for i in range(self.n_column):
-            if self.categories[i] == name_col:
-                for n_line in filter_col:
-                    col.append(self.content[n_line][i])
+        id_col = self.get_id_column(name_col)
+        
+        for n_line in filter_col:
+            col.append(self.content[n_line][id_col])
         return col
+    
+    def get_id_column(self, name_col):
+        print(self.categories)
+
+        for i in range(len(self.categories)):
+            if self.categories[i] == name_col:
+                return i
+
+    def get_columns_value(self, name_cols, condFilter = None):
+        name_cols=DataTools.str_to_singleton(name_cols)
+        '''if "id_col" not in name_cols:
+            name_cols.insert(0, "id_col")'''
+        result = self.extract_data(name_cols, condFilter)
+        columns_values = []
+        for i in range(len(result[0])):
+            #T = str(i)
+            T= str(result[0][i])
+            '''for col in result:
+                T +=", "+col[i]'''
+            for n_col in range(1,len(result)):
+                T += ", "+str(result[n_col][i])
+            columns_values.append(T)
+        return columns_values
 
     def print_columns(self, name_cols, condFilter = None):
-        if "id_col" not in name_cols:
-            name_cols.insert(0, "id_col")
+        
+        name_cols=DataTools.str_to_singleton(name_cols)
+        '''if "id_col" not in name_cols:
+            name_cols.insert(0, "id_col")'''
         T=name_cols[0]
         for i in range(1,len(name_cols)):
             T+="/"+ name_cols[i]
         result = self.extract_data(name_cols, condFilter)
         for i in range(len(result[0])):
             #T = str(i)
-            T= result[0][i]
+            T= str(result[0][i])
             '''for col in result:
                 T +=", "+col[i]'''
             for n_col in range(1,len(result)):
-                T += ", "+result[n_col][i]
+                T += ", "+str(result[n_col][i])
+        return T
+    
+    
+    def add_columns(self, name_categories, values_categories = None):
+        
+        if values_categories is None:
+            for cat in name_categories:
+                self.add_column(cat)
+            return
+        for cat, value in name_categories, values_categories:
+            self.add_column(cat, value)
     
     def add_column(self, name_categorie : str, values_categories = None):
         self.categories.append(name_categorie)
@@ -132,23 +187,42 @@ class CSVfile():
             for i in range(len(self.content)):
                 self.content[i].append('Null')
         else :
-            for i in range(len(self.content)):
-                self.content[i].append(values_categories[i])
-        
+            
+            if len(self.content) == 0:
+                print("blanck file, adding lines")
                 
-    def write_data(self, path_saved_file):
-        
-        writer = csv.writer(path_saved_file)
+            elif len(self.content) == 0:
+                print("blanck file, adding lines")
+            
+            for i in range(len(values_categories)):
+                if i >= len(self.content):
+                    self.content.append(["Null" for a in range(len(self.categories)-1)])
+                    self.content[i][0] = i
+                self.content[i].append(values_categories[i])
+    
+    def set_data_at_col_and_line(self, name_col, id_line, text):
+        self.content[id_line][self.get_id_column(name_col)] = text
+    
+    def clear_file(self):
+        f = open(self.path, "w+")
+        f.truncate()
+        f.close()
+                
+    def write_data_to_file(self):
+        self.clear_file()
+        f=open(self.path, 'a')
+        writer = csv.writer(f)
         writer.writerow(self.categories)
         writer.writerows(self.content)
-
-    def save_file_and_clean(self, name_saved_file, path_saev_file = PATH_SAVE_DATAS):
-        #TODO may not work on Windows
-        path_new_file =path_saev_file+"/"+name_saved_file
-        f= open(path_new_file, 'x')
         f.close()
-        shutil.move(self.path, path_new_file)
-        self.path = path_new_file
+
+    def save_file(self, path_save_data):
+        #TODO may not work on Windows
+        #path_new_file =path_saev_file+"/"+name_saved_file
+        f= open(path_save_data, 'x')
+        f.close()
+        shutil.move(self.path, path_save_data)
+        self.path = path_save_data
         
 
 

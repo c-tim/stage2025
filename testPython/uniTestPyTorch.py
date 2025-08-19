@@ -7,23 +7,30 @@ Created on Wed Aug  6 10:55:18 2025
 """
 import sys
 sys.path.append('../py_programs/')
+import os
 
 import unittest
 import DataTools
 import DataValidation
 from pyTorchModel import pyTorchModel
+
 from classEnergyAnalyzer import EnergyAnalyzer
 from classTensorFunction import TensorNet
 from classTensorModule import *
 import classModelTester as Tester
+from CSVReader import CSVfile
 
 import numpy as np
 
 from tflearn.datasets import titanic
 from tflearn.data_utils import load_csv
 
+import torchvision.models as ExampleModels
 
-class testPyTorchModel(unittest.TestCase):
+from torchsummary import summary
+
+
+class testPyTorchModel():
     
     def test_noErrorPytorchNet(self):
         self.test_model = pyTorchModel(DataTools.usual_criterion)
@@ -52,6 +59,24 @@ class testPyTorchModel(unittest.TestCase):
                 config[item] = test_combinaisons
                 #print("test ", item, " with ", test_combinaisons)
                 test_model = pyTorchModel(DataTools.usual_criterion, param_net_model=config)
+    def test_noErrorTraining(self):
+        self.test_model = pyTorchModel(DataTools.usual_criterion)
+        self.test_model.train(DataTools.CIFAR10.train_inputs , "temp.pth", number_epoch=1)
+
+    def test_noErrorTrainingExampleModel(self):
+        list_model = DataTools.models.list_models(module=ExampleModels)
+        self.test_model = pyTorchModel(DataTools.usual_criterion, given_Model=ExampleModels.get_model(list_model[0]))
+        self.test_model.train(DataTools.CIFAR10.trainloader , "temp.pth", number_epoch=1)
+    
+    def test_noErrorSummary(self):
+        #not my module but I am testing it to see if it can changes sometimes and if i use it correctly
+        summary(DataTools.models.get_model("wide_resnet50_2"),input_size=DataTools.CIFAR10.datasets.size_input)
+    
+    def test_ErrorSummaryWringDatasetForModel(self):
+        summary(DataTools.models.get_model("densenet121"),input_size=DataTools.CIFAR10.datasets.size_input)
+
+    
+
 
 class testDataTools(unittest.TestCase):
     
@@ -65,15 +90,53 @@ class testDataTools(unittest.TestCase):
 
 class testEnergyAnalyzer(unittest.TestCase):
     
-    def test_noErrorCreation(self):
-        test = EnergyAnalyzer("test")
-        
-    #TODO add test to check suffixe for file name inputs
+    def function_emissions(self):
+        a = 1
+        for i in range(10):
+            a+=1
     
-class testTensorFlow(unittest.TestCase):
+    def remove_temp_file(self, path):
+        try :
+            os.remove(path)
+        except :
+            print("file ", path," not found")
+    
+    def start_analyser_and_track_function(self):
+        self.remove_temp_file("testEnergyAnalyzer.csv")
+        test = EnergyAnalyzer("test", name_output_file="testEnergyAnalyzer.csv")
+        f = test.track_function(self.function_emissions)
+        for i in range(5):
+            f()
+        return test
+    
+    
+    
+    def test_noErrorCreation(self):
+        test_CSVreader.remove_temp_file("testEnergyAnalyzer.csv")
+        test = EnergyAnalyzer("test", name_output_file="testEnergyAnalyzer.csv")
+    
+    
+    
+    def test_noErrorTrackFunctionAndDisplay(self):
+        test = self.start_analyser_and_track_function()
+        test.display_data_axis("duration")
+
+    '''def test_displayGraphKnownXAxis(self):
+        test = self.start_analyser_and_track_function()
+        test.display_data_axis("duration", x_axis="x_axis")
+     '''
+    def test_displayGraphKnownXcol(self):
+        test = self.start_analyser_and_track_function()
+        test.display_data_axis("duration",x_col = [1,2,3,4,5])        
+                  
+    def test_displayGraphKnownXAxisAndXcol(self):
+        test = self.start_analyser_and_track_function()
+        test.display_data_axis("duration", x_axis="x_axis", x_col = [1,2,3,4,5])
+        
+            
+class testTensorFlow():
     
     def test_noErrorModel(self):
-        
         test_model = TensorNet([6,32,32,2])
     
     def test_noErrorMultilayer(self):
@@ -112,7 +175,7 @@ class testTensorFlow(unittest.TestCase):
     
     
 
-class testTensorModules(unittest.TestCase):
+class testTensorModules():
     
     def test_noErrorInputData(self):
         #tfInputData(45)
@@ -149,8 +212,8 @@ class test_DataValidation(unittest.TestCase):
         self.assertEqual(f("test.txt", ".txt"), "test.txt")
         self.assertEqual(f("test", ".txt"), "test.txt")
         self.assertEqual(f("test", "txt"), "test.txt")
-
-class test_ModelTester(unittest.TestCase):
+        
+class test_ModelTester():
     
     def getAnalyze(self):
         return EnergyAnalyzer("temp", name_output_file="temp.csv")
@@ -159,8 +222,51 @@ class test_ModelTester(unittest.TestCase):
         Tester.testGpu(self.getAnalyze(), 2)
         
     def test_pyTorch_series_train_and_track_emissions(self):
-        Tester.pyTorch_series_train_and_track_emissions(self.getAnalyze(), [0], DataTools.CIFAR10.test_sample, "uniTest",1)
+        Tester.pyTorch_series_train_and_track_emissions(self.getAnalyze(), [0], DataTools.CIFAR10.train_inputs, "uniTest",1, False)
 
+class test_CSVreader(unittest.TestCase):
+    
+    
+    temp_file = "temp.csv"
+    
+    def remove_temp_file(self, path = temp_file):
+        try :
+            os.remove(path)
+        except :
+            print("file ", path," not found")
+    
+    def test_noErrorWriting(self):
+        self.remove_temp_file()
+        f = CSVfile.create_file(self.temp_file)
+        f.add_column("test", [1,2,3])
+        self.assertEqual(f.get_categories(), ['id_col', 'test'])
+        self.assertEqual(f.get_columns_value("test"), ['1','2','3'])
+    
+    def test_noErrorPrintingLabel(self):
+        self.remove_temp_file()
+
+        f = CSVfile.create_file(self.temp_file)
+        f.add_column("test_label", ['a','b','a','b','a', 'a', 'b'])
+        f.add_column("test_value", [1,2,3,4,5,6,7])
+        self.assertEqual(f.get_categories(), ['id_col', 'test_label', 'test_value'])
+        self.assertEqual(f.get_columns_value("test_label"), ['a','b','a','b','a', 'a', 'b'])
+        self.assertEqual(f.get_columns_value("test_value"), ['1','2','3','4','5','6','7'])
+        self.assertEqual(f.get_columns_value("test_value", {"test_label":'a'}), ['1','3','5','6'])
+    
+    def test_noErrorWritingAndREtrievingData(self):
+        self.remove_temp_file()
+
+
+        f = CSVfile.create_file(self.temp_file)
+        f.add_column("test_label", ['a','b','a','b','a', 'a', 'b'])
+        f.add_column("test_value", [1,2,3,4,5,6,7])
+        f.write_data_to_file()
         
-        
+        f2 = CSVfile.create_file(self.temp_file)
+        self.assertEqual(f2.get_categories(), ['id_col', 'test_label', 'test_value'])
+        self.assertEqual(f2.get_columns_value("test_label"), ['a','b','a','b','a', 'a', 'b'])
+        self.assertEqual(f2.get_columns_value("test_value"), ['1','2','3','4','5','6','7'])
+        self.assertEqual(f2.get_columns_value("test_value", {"test_label":'a'}), ['1','3','5','6'])
+ 
+
 unittest.main(verbosity=20)
