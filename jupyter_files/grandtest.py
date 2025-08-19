@@ -19,6 +19,10 @@ Original file is located at
 
 # Modules python a importer :
 # Classes
+import sys
+sys.path.append('../py_programs/')
+sys.path.append('../testPython/')
+
 from classEnergyAnalyzer import EnergyAnalyzer
 from pyTorchModel import pyTorchModel
 from classDatasets import Dataset

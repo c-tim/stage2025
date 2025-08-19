@@ -127,11 +127,11 @@ class testEnergyAnalyzer(unittest.TestCase):
      '''
     def test_displayGraphKnownXcol(self):
         test = self.start_analyser_and_track_function()
-        test.display_data_axis("duration",x_col = [1,2,3,4,5])        
+        test.display_data_axis("duration",x_col = ['1','2','3','4','5'])        
                   
     def test_displayGraphKnownXAxisAndXcol(self):
         test = self.start_analyser_and_track_function()
-        test.display_data_axis("duration", x_axis="x_axis", x_col = [1,2,3,4,5])
+        test.display_data_axis("duration", x_axis="x_axis", x_col = ['1','2','3','4','5'])
         
             
 class testTensorFlow():

@@ -127,6 +127,7 @@ class CSVfile():
         id_col = self.get_id_column(name_col)
         
         for n_line in filter_col:
+            print(self.content[n_line])
             col.append(self.content[n_line][id_col])
         return col
     
