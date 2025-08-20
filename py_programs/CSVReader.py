@@ -187,8 +187,8 @@ class CSVfile():
             for cat in name_categories:
                 self.add_column(cat)
             return
-        for cat, value in name_categories, values_categories:
-            self.add_column(cat, value)
+        for i in range(len(name_categories)):
+            self.add_column(name_categories[i], values_categories[i])
     
     def add_column(self, name_categorie : str, values_categories = None):
         self.categories.append(name_categorie)
