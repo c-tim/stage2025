@@ -73,6 +73,11 @@ def str_to_singleton(obj):
         obj = [obj]
     return obj
 
+def remove_suffix(input_string, suffix):
+    if suffix and input_string.endswith(suffix):
+        return input_string[:-len(suffix)]
+    return input_string
+
 #Usual components for the traininf and test of models
 usual_transform = get_transform(3)
 

@@ -53,7 +53,7 @@ class CSVfile():
         #i = 2 #start at 2 because the first line is for the categories
         for line in self.file:
             #print("line ", i, " : ", line)
-            line = line.removesuffix("\r\n")
+            line = DataTools.remove_suffix(line, "\r\n")
             self.content.append(line.split(","))
         
             
