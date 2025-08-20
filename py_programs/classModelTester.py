@@ -15,7 +15,7 @@ from torchsummary import summary
 
 
 def testGpu(analyse : EnergyAnalyzer, power_ten_iterations : int):
-    analyse.set_new_project("evaluate_performance_biais")
+    analyse.set_new_project("emissions par iterations")
     def consuming_function(loop_count :int):
       i=0
       for loop in range(loop_count):
@@ -30,6 +30,10 @@ def testGpu(analyse : EnergyAnalyzer, power_ten_iterations : int):
       tracked_function(n_loop)
     analyse.display_data_axis("emissions", x_axis="Number iterations", x_col=test_iterations, condFilter={"project_name":"evaluate_performance_biais"})
 
+
+def getModel(id_model : int):
+    list_model = DataTools.models.list_models(module=ExampleModels)
+    return list_model(id_model)
 
 def series_train_and_track_model_emissions(analyser:EnergyAnalyzer, model, dataset, path_save_model,list_info_tracking):
     for i in range(len(list_info_tracking)):

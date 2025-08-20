@@ -253,6 +253,18 @@ class test_CSVreader(unittest.TestCase):
         self.assertEqual(f.get_columns_value("test_value"), ['1','2','3','4','5','6','7'])
         self.assertEqual(f.get_columns_value("test_value", {"test_label":'a'}), ['1','3','5','6'])
     
+    
+    def test_noErrorPrintingLabelAddingColumnsAllAtOnce(self):
+        self.remove_temp_file()
+
+        f = CSVfile.create_file(self.temp_file)
+        f.add_column(["test_label","test_value"], [['a','b','a','b','a', 'a', 'b'], [1,2,3,4,5,6,7]])
+        self.assertEqual(f.get_categories(), ['id_col', 'test_label', 'test_value'])
+        self.assertEqual(f.get_columns_value("test_label"), ['a','b','a','b','a', 'a', 'b'])
+        self.assertEqual(f.get_columns_value("test_value"), ['1','2','3','4','5','6','7'])
+        self.assertEqual(f.get_columns_value("test_value", {"test_label":'a'}), ['1','3','5','6'])
+    
+    
     def test_noErrorWritingAndREtrievingData(self):
         self.remove_temp_file()
 
