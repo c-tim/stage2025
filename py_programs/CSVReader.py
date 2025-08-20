@@ -45,17 +45,25 @@ class CSVfile():
 
         except :
             self.categories = ["id_col"]    #works for now
-        if self.categories[0] != "id_col":
-            self.categories[0]="id_col"
+
 
             
         self.n_column = len(self.categories)
         self.content = [] 
-        i = 2 #start at 2 because the first line is for the categories
+        #i = 2 #start at 2 because the first line is for the categories
         for line in self.file:
             #print("line ", i, " : ", line)
-            self.content.append([str(i)] + line.split(","))
-            i+=1
+            line = line.removesuffix("\r\n")
+            self.content.append(line.split(","))
+        
+            
+        #adding the line index if not already inserted
+        if self.categories[0] != "id_col":
+            self.categories.insert(0, "id_col")
+            for i in range(len(self.content)):
+                self.content[i].insert(0, i+1)
+            
+        
         self.file.close()
 
     
@@ -184,6 +192,7 @@ class CSVfile():
     
     def add_column(self, name_categorie : str, values_categories = None):
         self.categories.append(name_categorie)
+        content = self.content
         if values_categories is None :
             for i in range(len(self.content)):
                 self.content[i].append('Null')
