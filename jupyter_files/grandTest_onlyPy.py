@@ -37,9 +37,9 @@ import torchvision.models as ExampleModels
 
 """### Tests de validation"""
 
-!rm temp.csv
+#!rm temp.csv
 
-!python uniTestPyTorch.py
+#!python uniTestPyTorch.py
 
 """### Initialisation des variables"""
 
@@ -73,7 +73,7 @@ list_id_model = [i for i in range(1,80)]
 
 """### Test : vérifier la consommation en fonction du nombre de tâches"""
 
-!rm temp.csv
+#!rm temp.csv
 
 Tester.testGpu(tempAnalyzer, 5)
 
@@ -85,9 +85,9 @@ list_worked_models = Tester.pyTorch_series_test_model_dataset_compatibility(list
 
 #Tester.pyTorch_series_train_and_track_emissions(analyzer, list_id_model,testloader,label_Machine, 1, False)
 
-!mkdir model_one_image
-!cp *.pth ./model_one_image
-!tar cvf model_one_image.tar model_one_image/
+#!mkdir model_one_image
+#!cp *.pth ./model_one_image
+#!tar cvf model_one_image.tar model_one_image/
 
 """Si il n'y a pas d'erreurs dans le test ci-dessus avec la list de modeles, alors le test suivant peut être executé et ne devrait pas retourner d'erreurs
 
@@ -95,16 +95,16 @@ list_worked_models = Tester.pyTorch_series_test_model_dataset_compatibility(list
 """
 
 number_epoch_tested = 2
-#Tester.pyTorch_series_train_and_track_emissions(analyzer, list_worked_models,trainloader,label_Machine, 2, False)
+Tester.pyTorch_series_train_and_track_emissions(analyzer, list_worked_models,trainloader,label_Machine, 2, True)
 
-!mkdir model_CIRFA
-!mv *.pth ./model_CIRFA
-!tar cvf model_CIRFA.tar model_CIRFA/
+#!mkdir model_CIRFA
+#!mv *.pth ./model_CIRFA
+#!tar cvf model_CIRFA.tar model_CIRFA/
 
 """### Préparation pour téléchargement"""
 
-!mkdir csv_result
-!cp *.csv csv_result
-!tar cvf csv_result.tar csv_result/
+#!mkdir csv_result
+#!cp *.csv csv_result
+#!tar cvf csv_result.tar csv_result/
 
 """Partie moins critique puiqu'on a les résultat, mais comme les données peuvent êtres perdus il faut tout télécharger"""

@@ -1,0 +1,28 @@
+
+!pip install codecarbon
+!pip install git+https://github.com/MihaMarkic/tflearn.git@fix/is_sequence_missing
+!pip install Pillow==9.5.0
+
+
+!rm temp.csv
+
+!python uniTestPyTorch.py
+
+
+!rm temp.csv
+
+
+!mkdir model_one_image
+!cp *.pth ./model_one_image
+!tar cvf model_one_image.tar model_one_image/
+
+
+!mkdir model_CIRFA
+!mv *.pth ./model_CIRFA
+!tar cvf model_CIRFA.tar model_CIRFA/
+
+
+!mkdir csv_result
+!cp *.csv csv_result
+!tar cvf csv_result.tar csv_result/
+
