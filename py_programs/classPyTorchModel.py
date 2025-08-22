@@ -41,9 +41,10 @@ class pyTorchModel(mod):
         #initialisation of pyModel
         self.pyModel = given_Model
         
-        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
-        self.pyModel.to(self.device)
+        #self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        #self.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+        self.device = torch.device("cuda")
+        self.pyModel = self.pyModel.to(self.device)
         # optimizer here because it use net properties
         self.optimizer = optim.SGD(self.pyModel.parameters(), lr=0.001, momentum=0.9)
         self.criterion = given_criterion
@@ -66,7 +67,7 @@ class pyTorchModel(mod):
         -------
         None.
 
-        """
+        """      
         DataValidation.addSuffixIfNecessary(path_save_model, ".pth")
         
         for epoch in range(number_epoch):  # loop over the dataset multiple times
@@ -77,7 +78,6 @@ class pyTorchModel(mod):
                 inputs, labels = data[0].to(self.device), data[1].to(self.device)
                 # zero the parameter gradients
                 self.optimizer.zero_grad()
-        
                 # forward + backward + optimize
                 outputs = self.pyModel(inputs)
                 loss = self.criterion(outputs, labels)
@@ -94,7 +94,12 @@ class pyTorchModel(mod):
         self.save_model(path_save_model)
 
     def get_outputs(self, path,dataloader):
-        self.pyModel.load_state_dict(torch.load(path,weights_only=True))
+        #self.pyModel.load_state_dict(torch.load(path,weights_only=True))
+
+
+        self.pyModel.load_state_dict(torch.load(path, map_location=self.device), strict=False)
+        self.pyModel = self.pyModel.to(self.device)
+        self.pyModel.eval()
         # again no gradients needed -> this method< remove backward call and reduce memory
         outputs_group =  []
         labels_group = []

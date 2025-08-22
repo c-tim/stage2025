@@ -79,7 +79,7 @@ class pyTorchCNet(nn.Module):
 
         self.fc1 = nn.Linear(conv2_out * conv_output_size * conv_output_size, fc1_out)
         self.fc2 = nn.Linear(fc1_out, fc2_out)
-        self.fc3 = nn.Linear(fc2_out, num_classes)
+        self.fi3 = nn.Linear(fc2_out, num_classes)
         
         self.forward_function_used = self.reLu_forward
 
@@ -88,7 +88,7 @@ class pyTorchCNet(nn.Module):
         size_input = (size_input - kernel_size + 1) // pool_kernel 
         return size_input
     
-    def reLu_forward(self, x ):
+    def reLu_forward(self, x ): 
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = torch.flatten(x, 1)
