@@ -32,29 +32,24 @@ class EnergyAnalyzer():
         self.set_new_project(name_project)
         self.csvResult = None
         self.name_file = name_output_file
-    
+        self.recup_file_result()
+        
     def set_new_project(self, name_project : str):
         """
         Change the name of the project (value of the column 'project_name').
         """
         self.current_project_name = name_project
     
-    @track_emissions(project_name="temp_dont_use", output_file="temp.csv")
-    def blank_function(self):
-        """
-        Used to prevent a bug on the last tracked function
-        """
-        i=0
-        i+=1
-
     def track_function(self,f, additional_infos = ""):
         """
         track the emissions of a function using codecarbon module
         
         Usage :
+            test_analyse = EnergyAnalyzer("test_project")
+            
             def f(a):
                 return a*2
-            track_function(f)
+            tracked_function = test_analyse.track_function(f)
             print(tracked_function(5))
             --> return 10
 
@@ -81,12 +76,10 @@ class EnergyAnalyzer():
     
     def recup_file_result(self, path_file = ""):
         if path_file == "":
-            #self.csvResult = CSVfile(self.name_file)
-            self.csvResult = CSVfile.create_file(self.name_file)
-        else :
-            DataValidation.addSuffixIfNecessary(path_file, ".csv")
-            #self.csvResult = CSVfile(path_file)
-            self.csvResult = CSVfile.create_file(path_file)
+            path_file= self.name_file
+
+        DataValidation.addSuffixIfNecessary(path_file, ".csv")
+        self.csvResult = CSVfile.create_file(path_file)
     
     def convertData(self, col):
         l=[]
@@ -165,6 +158,24 @@ class EnergyAnalyzer():
         plt.suptitle(self.current_project_name)
         plt.legend()
         plt.show()
+    
+    def analyse_model(self, model, database,output_file = ""):
+        if output_file == "":
+            output_file = self.csvResult.path
+        
+        f = self.track_function(model.train, model.name)
+        f(database, "analysis_model.pth")   
+        lastline = self.csvResult.last_line()
+        print("Model : ", model.name)
+        cats = ["emissions","emissions_rate","cpu_energy","ram_energy","energy_consumed"]
+        for cat in cats:
+            print(cat, " : ", lastline[self.csvResult.get_id_column(cat)])
+        
+                
+
+        
+        
+        
         
 
             

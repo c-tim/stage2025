@@ -213,6 +213,9 @@ class CSVfile():
     def set_data_at_col_and_line(self, name_col, id_line, text):
         self.content[id_line][self.get_id_column(name_col)] = text
     
+    def last_line(self):
+        return self.content[-1]
+    
     def clear_file(self):
         f = open(self.path, "w+")
         f.truncate()

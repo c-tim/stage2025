@@ -40,10 +40,15 @@ class pyTorchModel(mod):
         super().__init__()        
         #initialisation of pyModel
         self.pyModel = given_Model
+        self.name = "Unknown"
+        try : 
+            self.name =given_Model.__class__.__name__
+        except :
+            pass
         
         #self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        #self.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-        self.device = torch.device("cuda")
+        self.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+        #self.device = torch.device("cuda")
         self.pyModel = self.pyModel.to(self.device)
         # optimizer here because it use net properties
         self.optimizer = optim.SGD(self.pyModel.parameters(), lr=0.001, momentum=0.9)
@@ -128,7 +133,7 @@ class pyTorchModel(mod):
     
     def analyse_performance(self, path, dataloader, classes):
         """
-        Returns the rate of the correc predictions based on the dataloader and the classes provided
+        Returns the rate of the correct predictions based on the dataloader and the classes provided
 
         """
         correct_pred = {classname: 0 for classname in classes}
