@@ -36,23 +36,16 @@ class CSVfile():
         self.file =  open(self.path, 'r',newline='')
         self.line_red = csv.reader(self.file, delimiter=',', quotechar='/')
         # we get the content beacause the iterator is not readable several times
-        '''if len(self.line_red)>0:
-            self.categories = ["id_col"] + self.line_red.__next__() 
-        else :
-            self.categories = ["id_col"]'''
         try :
             self.categories = self.line_red.__next__() 
 
         except :
             self.categories = ["id_col"]    #works for now
 
-
-            
         self.n_column = len(self.categories)
         self.content = [] 
         #i = 2 #start at 2 because the first line is for the categories
         for line in self.file:
-            #print("line ", i, " : ", line)
             line = DataTools.remove_suffix(line, "\r\n")
             self.content.append(line.split(","))
         
@@ -135,13 +128,10 @@ class CSVfile():
         id_col = self.get_id_column(name_col)
         
         for n_line in filter_col:
-            print(self.content[n_line])
             col.append(self.content[n_line][id_col])
         return col
     
     def get_id_column(self, name_col):
-        print(self.categories)
-
         for i in range(len(self.categories)):
             if self.categories[i] == name_col:
                 return i
@@ -165,8 +155,6 @@ class CSVfile():
     def print_columns(self, name_cols, condFilter = None):
         
         name_cols=DataTools.str_to_singleton(name_cols)
-        '''if "id_col" not in name_cols:
-            name_cols.insert(0, "id_col")'''
         T=name_cols[0]
         for i in range(1,len(name_cols)):
             T+="/"+ name_cols[i]
@@ -182,6 +170,11 @@ class CSVfile():
     
     
     def add_columns(self, name_categories, values_categories = None):
+        """
+        Call add_column for each element of names_categories with the corresponding element of values_categories if provided.
+        values_categories must have a value for each element of name_categories or be None
+
+        """
         
         if values_categories is None:
             for cat in name_categories:
@@ -230,8 +223,7 @@ class CSVfile():
         f.close()
 
     def save_file(self, path_save_data):
-        #TODO may not work on Windows
-        #path_new_file =path_saev_file+"/"+name_saved_file
+        #may not work on Windows
         f= open(path_save_data, 'x')
         f.close()
         shutil.move(self.path, path_save_data)

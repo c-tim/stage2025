@@ -220,8 +220,8 @@ plt.show()
 indices_to_skip = []
 list_ratio_performances = []
 for i in range(len(all_labels_models)) :
-  m = pyTorchModel.createPyTorchNet(DataTools.usual_criterion, 3) # on ilporte un autre modele apres donc pas impportant (TODO corriger pr ne plus faire ca)
   try :
+    m = pyTorchModel.importPyTorchExampleNet(DataTools.usual_criterion, DataTools.models.get_model(str(all_labels_models[i]))) # on ilporte un autre modele apres donc pas impportant (TODO corriger pr ne plus faire ca)
     path = "./data_gathered/all_pth/"+str(all_labels_models[i])+".pth"
     print("test output on ", path)
     correct_predictions, total_predictions = m.analyse_performance(path, DataTools.CIFAR10.test_inputs, DataTools.usual_classes)

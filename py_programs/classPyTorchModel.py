@@ -24,16 +24,25 @@ import DataValidation
 
 class pyTorchModel(mod):
     
-    def createPyTorchNet(given_criterion, n_layers_output):
-        pyModel = pyTorchNet(n_layers_output)
-        return pyTorchModel(given_criterion, pyModel)
+    def createPyTorchSimpleNet(criterion):
+        """
+        Create a simple PyTorch Net, found in the tutorial
+
+        """
+        pyModel = pyTorchNet(3)
+        return pyTorchModel(criterion, pyModel)
     
-    def createPyTorchCNet(given_criterion, param_net_model):
+    def createPyTorchCNet(criterion, param_net_model):
         pyModel = pyTorchCNet(**param_net_model)   
-        return pyTorchModel(given_criterion, pyModel)
+        return pyTorchModel(criterion, pyModel)
     
-    def createPyTorchExampleNet(given_criterion, given_Model):
-        return pyTorchModel(given_criterion, given_Model)
+    def importPyTorchExampleNet(criterion, given_Model):
+        """
+        Import the given PyTorch model
+
+        """
+        return pyTorchModel(criterion, given_Model)
+    
 
 
     def __init__(self, given_criterion, given_Model):
@@ -56,7 +65,7 @@ class pyTorchModel(mod):
      
     def train(self, training_data, path_save_model,number_epoch = 2, verbose = True):
         """
-        Train the pyTorch model
+        Train the pyTorch model with the trainig data and save it in path_save_model.
 
         Parameters
         ----------
@@ -97,12 +106,13 @@ class pyTorchModel(mod):
         
         print('Finished Training')
         self.save_model(path_save_model)
+        
 
-    def get_outputs(self, path,dataloader):
+    #TODO warning changed order args
+    def get_outputs(self,dataloader,  path = ""):
         #self.pyModel.load_state_dict(torch.load(path,weights_only=True))
 
-
-        self.pyModel.load_state_dict(torch.load(path, map_location=self.device), strict=False)
+        self.load_model(path)
         self.pyModel = self.pyModel.to(self.device)
         self.pyModel.eval()
         # again no gradients needed -> this method< remove backward call and reduce memory
@@ -139,7 +149,7 @@ class pyTorchModel(mod):
         correct_pred = {classname: 0 for classname in classes}
         total_pred = {classname: 0 for classname in classes}
 
-        labels_grouped, outputs_grouped = self.get_outputs(path, dataloader)
+        labels_grouped, outputs_grouped = self.get_outputs(dataloader, path)
         predictions_grouped = self.get_predictions(outputs_grouped)
         
         for label, prediction in zip(labels_grouped,predictions_grouped):
@@ -180,5 +190,10 @@ class pyTorchModel(mod):
         torch.save(self.pyModel.state_dict(), path)
         print("Model saved in ", path)
     
+    def load_model(self, path = ""):
+        if path == "":
+            path = self.savePathModel
+        self.pyModel.load_state_dict(torch.load(path, map_location=self.device), strict=False)
+
 
 
