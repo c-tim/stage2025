@@ -13,29 +13,29 @@ import DataValidation
     
 class CSVfile():
     
-    PATH_SAVE_DATAS = "../emissions_datas"
+    DEFAULT_PATH = "./datas.csv"
     
     def create_file(path):
         path = DataValidation.addSuffixIfNecessary(path, ".csv")
         try:
             open(path, 'x')
         except :
-            print("Error file already created")
+            print(path, " already created : opening file")
         return CSVfile(path)
     
     def open_file(path):
         return CSVfile(path)
 
 
-    def __init__(self, path = './emissions.csv'):
-       
+    def __init__(self, path = DEFAULT_PATH):
         self.path = path
         self.refresh_read_file()
+
     
     def refresh_read_file(self):
         self.file =  open(self.path, 'r',newline='')
         self.line_red = csv.reader(self.file, delimiter=',', quotechar='/')
-        # we get the content beacause the iterator is not readable several times
+        # we get the content because the iterator is not readable several times
         try :
             self.categories = self.line_red.__next__() 
 
@@ -44,7 +44,7 @@ class CSVfile():
 
         self.n_column = len(self.categories)
         self.content = [] 
-        #i = 2 #start at 2 because the first line is for the categories
+        #start at 2 because the first line is for the categories
         for line in self.file:
             line = DataTools.remove_suffix(line, "\r\n")
             self.content.append(line.split(","))
@@ -58,10 +58,11 @@ class CSVfile():
             
         
         self.file.close()
-
+        
+    def set_defaul_path(path):
+        DEFAULT_PATH = path
     
             
-    ## print the labels of the columns
     def get_categories(self):
         '''
         Print the label of each categorie.
@@ -160,7 +161,6 @@ class CSVfile():
             T+="/"+ name_cols[i]
         result = self.extract_data(name_cols, condFilter)
         for i in range(len(result[0])):
-            #T = str(i)
             T= str(result[0][i])
             '''for col in result:
                 T +=", "+col[i]'''
@@ -192,9 +192,6 @@ class CSVfile():
         else :
             
             if len(self.content) == 0:
-                print("blanck file, adding lines")
-                
-            elif len(self.content) == 0:
                 print("blanck file, adding lines")
             
             for i in range(len(values_categories)):

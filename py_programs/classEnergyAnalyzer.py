@@ -139,12 +139,12 @@ class EnergyAnalyzer():
         for col_res in cols_result:
             l.append(self.convertData(col_res))
         cols_result = l
-        print(cols_result, " stored with the label(s) ", col_label_result)
         return self.display_graph_col_on_2_axis(x_axis, col_names, col_label_result, cols_result)    
     
     def display_graph_col_on_2_axis(self, label_x, label_y,col_data_x, cols_data_y):
         all_label = ""
         args = []
+        #loop pour afficher plusieurs courbes en memes temps (plusieurs y et meme x)
         for i in range(len(cols_data_y)):
             if i > 0:
                 all_label+=", "

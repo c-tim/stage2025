@@ -32,13 +32,11 @@ def imshow(img):
 
 def get_transform(dimension : int):
     vec = [0.5 for i in range(dimension)]
-    print(vec)
     return transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize(vec, vec)])
 
 def get_transform_resized(dimension: int):
     vec = [0.5 for _ in range(dimension)]
-    print(vec)
     return transforms.Compose([
         transforms.Resize((32, 32)),  # Resize to something reasonable for CNN
         transforms.ToTensor(),
@@ -47,7 +45,6 @@ def get_transform_resized(dimension: int):
 
 def get_transform_resized2(dimension: int):
     vec = [0.5 for _ in range(dimension)]
-    print(vec)
     return transforms.Compose([
         transforms.Resize((224, 224)),   # Resize to what AlexNet expects
         transforms.ToTensor(),
