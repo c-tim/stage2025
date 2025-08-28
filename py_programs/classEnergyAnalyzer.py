@@ -59,12 +59,6 @@ class EnergyAnalyzer():
             DESCRIPTION.
         additional_infos : TYPE, optional
             DESCRIPTION. The default is "".
-
-        Returns
-        -------
-        TYPE
-            DESCRIPTION.
-
         """
         label =self.current_project_name+ ":" + f.__name__
         if additional_infos != "":
@@ -101,11 +95,6 @@ class EnergyAnalyzer():
             DESCRIPTION. The default is "".
         condFilter : TYPE, optional
             DESCRIPTION. The default is None.
-
-        Returns
-        -------
-        TYPE
-            DESCRIPTION.
 
         """
         #self.blank_function()

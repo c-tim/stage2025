@@ -15,21 +15,22 @@ class CSVfile():
     
     DEFAULT_PATH = "./datas.csv"
     
-    def create_file(path):
+    def create_file(path, auto_save_to_file = True):
         path = DataValidation.addSuffixIfNecessary(path, ".csv")
         try:
             open(path, 'x')
         except :
             print(path, " already created : opening file")
-        return CSVfile(path)
+        return CSVfile(path, auto_save_to_file)
     
-    def open_file(path):
-        return CSVfile(path)
+    def open_file(path, auto_save_to_file = True):
+        return CSVfile(path, auto_save_to_file)
 
 
-    def __init__(self, path = DEFAULT_PATH):
+    def __init__(self, path = DEFAULT_PATH, auto_save_to_file  = True):
         self.path = path
         self.refresh_read_file()
+        self.autosave = auto_save_to_file
 
     
     def refresh_read_file(self):
@@ -184,21 +185,33 @@ class CSVfile():
             self.add_column(name_categories[i], values_categories[i])
     
     def add_column(self, name_categorie : str, values_categories = None):
+        """
+        Create a new column with the header name_categories and values for values_categories if provided.
+        If the lenght of the list values_categories exceed the current content, new rows are added.
+        If auto_save is enabled (it is by default), the values are written on the doc automatically.
+        Parameters
+        ----------
+        name_categorie : str
+        values_categories : TYPE, optional
+        -------
+
+        """
+        
         self.categories.append(name_categorie)
         content = self.content
         if values_categories is None :
             for i in range(len(self.content)):
                 self.content[i].append('Null')
         else :
-            
             if len(self.content) == 0:
-                print("blanck file, adding lines")
-            
+                print("Blanck file, adding lines") 
             for i in range(len(values_categories)):
                 if i >= len(self.content):
                     self.content.append(["Null" for a in range(len(self.categories)-1)])
                     self.content[i][0] = i
                 self.content[i].append(values_categories[i])
+        if self.autosave:
+            self.write_data_to_file()
     
     def set_data_at_col_and_line(self, name_col, id_line, text):
         self.content[id_line][self.get_id_column(name_col)] = text
@@ -207,11 +220,22 @@ class CSVfile():
         return self.content[-1]
     
     def clear_file(self):
+        """
+        Erase the content of the file
+        """
         f = open(self.path, "w+")
         f.truncate()
         f.close()
                 
     def write_data_to_file(self):
+        """
+        Update the csv file with the content added. Called during each modification if autosave is True
+
+        Returns
+        -------
+        None.
+
+        """
         self.clear_file()
         f=open(self.path, 'a')
         writer = csv.writer(f)
@@ -219,7 +243,7 @@ class CSVfile():
         writer.writerows(self.content)
         f.close()
 
-    def save_file(self, path_save_data):
+    def save_file_to_new_path(self, path_save_data):
         #may not work on Windows
         f= open(path_save_data, 'x')
         f.close()

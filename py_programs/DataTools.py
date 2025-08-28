@@ -30,6 +30,8 @@ def imshow(img):
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.show()
 
+
+
 def get_transform(dimension : int):
     vec = [0.5 for i in range(dimension)]
     return transforms.Compose(

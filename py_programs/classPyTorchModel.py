@@ -59,9 +59,11 @@ class pyTorchModel(mod):
         self.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         #self.device = torch.device("cuda")
         self.pyModel = self.pyModel.to(self.device)
+        
         # optimizer here because it use net properties
         self.optimizer = optim.SGD(self.pyModel.parameters(), lr=0.001, momentum=0.9)
         self.criterion = given_criterion
+        self.savePathModel = "unknown.pth"
      
     def train(self, training_data, path_save_model,number_epoch = 2, verbose = True):
         """
@@ -112,7 +114,9 @@ class pyTorchModel(mod):
     def get_outputs(self,dataloader,  path = ""):
         #self.pyModel.load_state_dict(torch.load(path,weights_only=True))
 
-        self.load_model(path)
+
+        if path != "":
+            self.load_model(path)
         self.pyModel = self.pyModel.to(self.device)
         self.pyModel.eval()
         # again no gradients needed -> this method< remove backward call and reduce memory
@@ -120,15 +124,10 @@ class pyTorchModel(mod):
         labels_group = []
         with torch.no_grad():
             for data in dataloader:
-                #inputs, label = data
                 inputs, label = data[0].to(self.device), data[1].to(self.device)
 
-                #images, labels = data
-
-                #inputs, labels = data[0].to(device), data[1].to(device)
                 outputs_group.append(self.pyModel(inputs))
             for data in dataloader : 
-                #inputs, label = data
                 inputs, label = data[0].to(self.device), data[1].to(self.device)
 
                 labels_group.append(label)

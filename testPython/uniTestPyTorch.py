@@ -265,6 +265,15 @@ class test_CSVreader(unittest.TestCase):
         self.assertEqual(f.get_columns_value("test_value", {"test_label":'a'}), ['1','3','5','6'])
     
     
+    def test_noErrorLastLine(self):
+        self.remove_temp_file()
+
+        f = CSVfile.create_file(self.temp_file)
+        f.add_columns(["test_label","test_value"], [['a','b','a','b','a', 'a', 'b'], [1,2,3,4,5,6,7]])
+        self.assertEqual(f.last_line(), ['7', 'b', 7])
+
+    
+    
     def test_noErrorWritingAndREtrievingData(self):
         self.remove_temp_file()
 
