@@ -13,9 +13,9 @@ Original file is located at
 ### Dépendances
 """
 
-!pip install codecarbon
-!pip install git+https://github.com/MihaMarkic/tflearn.git@fix/is_sequence_missing
-!pip install Pillow==9.5.0
+#!pip install codecarbon
+#!pip install git+https://github.com/MihaMarkic/tflearn.git@fix/is_sequence_missing
+#!pip install Pillow==9.5.0
 
 # Modules python a importer :
 # Classes
@@ -43,7 +43,7 @@ import torchvision.models as ExampleModels
 
 """### Initialisation des variables"""
 
-analyzer = EnergyAnalyzer("testPytorch", name_output_file="./testgeneral.csv")
+analyzer = EnergyAnalyzer("testPytorch", name_output_file="./testgeneral_trois.csv")
 tempAnalyzer = EnergyAnalyzer("testTempCsv", name_output_file="./temp.csv")
 
 '''analyzer.display_data_axis("emissions", condFilter={"project_name":"evaluate_performance_biais6"})
@@ -67,7 +67,8 @@ print([(i,list_model[i]) for i in range(len(list_model))])
 
 """#### liste des modèles testés"""
 
-list_id_model = [i for i in range(1,80)]
+#list_id_model = [i for i in range(1,80)]
+list_id_model = [58, 57, 47, 48, 49, 54, 55, 65, 53, 67]
 #list_id_model = [65]
 #TODO remove the incompatibles models
 
@@ -75,7 +76,7 @@ list_id_model = [i for i in range(1,80)]
 
 #!rm temp.csv
 
-Tester.testGpu(tempAnalyzer, 5)
+#Tester.testGpu(tempAnalyzer, 5)
 
 """### Test : vérifier la compatibilité des modèles avec la base de donnée"""
 
@@ -93,9 +94,11 @@ list_worked_models = Tester.pyTorch_series_test_model_dataset_compatibility(list
 
 ### Test : Entrainement sur la base de donnée CIRFA10
 """
+for i in range(5):
+	analyzer.set_new_project("serie("+str(i)+"(")
 
-number_epoch_tested = 2
-Tester.pyTorch_series_train_and_track_emissions(analyzer, list_worked_models,trainloader,label_Machine, 2, True)
+	number_epoch_tested = 2
+	Tester.pyTorch_series_train_and_track_emissions(analyzer, list_worked_models,trainloader,label_Machine, 2, True)
 
 #!mkdir model_CIRFA
 #!mv *.pth ./model_CIRFA

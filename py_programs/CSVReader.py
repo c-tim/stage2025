@@ -15,7 +15,7 @@ class CSVfile():
     
     DEFAULT_PATH = "./datas.csv"
     
-    def create_file(path, auto_save_to_file = True):
+    def create_file(path, auto_save_to_file = False):
         path = DataValidation.addSuffixIfNecessary(path, ".csv")
         try:
             open(path, 'x')
@@ -23,11 +23,11 @@ class CSVfile():
             print(path, " already created : opening file")
         return CSVfile(path, auto_save_to_file)
     
-    def open_file(path, auto_save_to_file = True):
+    def open_file(path, auto_save_to_file = False):
         return CSVfile(path, auto_save_to_file)
 
 
-    def __init__(self, path = DEFAULT_PATH, auto_save_to_file  = True):
+    def __init__(self, path = DEFAULT_PATH, auto_save_to_file  = False):
         self.path = path
         self.refresh_read_file()
         self.autosave = auto_save_to_file

@@ -32,7 +32,7 @@ class EnergyAnalyzer():
         self.set_new_project(name_project)
         self.csvResult = None
         self.name_file = name_output_file
-        self.recup_file_result()
+        #self.recup_file_result()
         
     def set_new_project(self, name_project : str):
         """
